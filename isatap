@@ -1,21 +1,26 @@
 #!/bin/bash
 
+# close tunnel if argument is "off"
+if [ "$1" = "off" ]; then
+	sudo ifconfig gif0 destroy 2>/dev/null
+	echo "tunnel closed"
+	exit 0
+fi
+
 router=59.66.4.50
 gateway=2001:da8:200:900e::1
 prefix=2001:da8:200:900e::5efe
 
 # test default gateway
 err=`ping -q -W 1 -c 1 \`netstat -f inet -nr | grep '^default' | grep '\.' | awk '{print $2}'\` 1>/dev/null 2>&1 || echo '1'`
-if [ -n "$err" ]
-then
-  echo 'failed to access default gateway'
+if [ -n "$err" ]; then
+	echo 'failed to access default gateway'
 	exit 1
 fi
 
 # test isatap router
 err=`ping -q -W 1 -c 1 $router 1>/dev/null 2>&1 || echo '1'`
-if [ -n "$err" ]
-then
+if [ -n "$err" ]; then
 	echo 'failed to access isatap router'
 	exit 1
 fi
@@ -25,16 +30,13 @@ ipecho_srv=(
 [0]='ip.3322.net'
 [1]='ipecho.net/plain'
 )
-for srv in ${ipecho_srv[@]}
-do
+for srv in ${ipecho_srv[@]}; do
 	inet4=`curl $srv 2>/dev/null`
-	if [ -n "$inet4" ]
-	then
+	if [ -n "$inet4" ]; then
 		break
 	fi
 done
-if [ -z "$inet4" ]
-then
+if [ -z "$inet4" ]; then
 	echo 'failed to get external ip address'
 	exit 1
 fi
@@ -54,6 +56,9 @@ sudo ifconfig gif0 tunnel $inet4 $router
 sudo route delete -inet6 default 1>/dev/null 2>&1
 sudo route add -inet6 default $gateway 1>/dev/null
 
+# flush dns
+sudo dscacheutil -flushcache
+
 # echo result
 inet4=`ifconfig gif0 | grep tunnel | awk '{print $3}'`
 inet6=`ifconfig gif0 | grep inet6 | grep $prefix | awk '{print $2'}`
@@ -72,8 +77,7 @@ ipv6_srv=(
 [2]='bt.byr.cn'
 [3]='bt.neu6.edu.cn'
 )
-for srv in ${ipv6_srv[@]}
-do
+for srv in ${ipv6_srv[@]}; do
 	echo -n 'ping6 '$srv' ... '
 	ping6 -q -i 1 -c 1 $srv 1>/dev/null 2>&1 && echo 'ok' || echo 'failed'
 done
