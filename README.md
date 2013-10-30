@@ -1,11 +1,11 @@
-mac-isatap
+Mac ISATAP
 ==========
 
-mac os x isatap configuration script for thu
+ISATAP Configuration script for those who use OS X in Tsinghua University.
 
-how to use
-==========
-
-chmod +x isatap
-
-./isatap
+	Usage: isatap COMMAND
+	
+	Available commands:
+	  ON      Enable ISATAP
+	  OFF     Disable ISATAP
+	  test    Ping6 test
