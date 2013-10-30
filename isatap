@@ -1,26 +1,35 @@
 #!/bin/bash
 
+function check_root {
+    if [[ $EUID -ne 0 ]]; then
+       echo "You must be root." 1>&2
+       exit 1
+    fi
+}
+
 function isatap_on {
+    check_root
     echo -n "Enabling ISATAP ... "
     router=59.66.4.50
     gateway=2001:da8:200:900e::1
     prefix=2001:da8:200:900e::5efe
     inet4=`ifconfig | grep inet | grep -v inet6 | awk '{print $2}' | grep -v "^127.0.0.1$" | grep -v "^169.254" | grep -v "^192.168" | head -n 1`
-    sudo ifconfig gif0 destroy 2>/dev/null
-    sudo ifconfig gif0 create
+    ifconfig gif0 destroy 2>/dev/null
+    ifconfig gif0 create
     inet6=$prefix:$inet4
-    sudo ifconfig gif0 inet6 $inet6 prefixlen 64
-    sudo ifconfig gif0 tunnel $inet4 $router
-    sudo route delete -inet6 default 1>/dev/null 2>&1
-    sudo route add -inet6 default $gateway 1>/dev/null
-    sudo dscacheutil -flushcache
+    ifconfig gif0 inet6 $inet6 prefixlen 64
+    ifconfig gif0 tunnel $inet4 $router
+    route delete -inet6 default 1>/dev/null 2>&1
+    route add -inet6 default $gateway 1>/dev/null
+    dscacheutil -flushcache
     echo "done"
 }
 
 function isatap_off {
+    check_root
     echo -n "Disabling ISATAP ... "
-    sudo ifconfig gif0 destroy 2>/dev/null
-    sudo route delete -inet6 default 1>/dev/null 2>&1
+    ifconfig gif0 destroy 2>/dev/null
+    route delete -inet6 default 1>/dev/null 2>&1
     echo "done"
 }
 
