@@ -1,7 +1,7 @@
 Mac ISATAP
 ==========
 
-ISATAP Configuration script for those who use OS X in Tsinghua University.
+ISATAP Configuration for OS X @ Tsinghua Univeristy
 
 	Usage: isatap COMMAND
 	
