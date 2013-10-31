@@ -1,7 +1,7 @@
 Mac ISATAP
 ==========
 
-ISATAP Configuration for OS X @ Tsinghua Univeristy
+ISATAP for OS X @ Tsinghua Univeristy
 
 	Usage: isatap COMMAND
 	
